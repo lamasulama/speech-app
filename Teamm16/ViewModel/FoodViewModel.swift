@@ -1,6 +1,3 @@
-
-
-
 import SwiftUI
 import Combine
 
@@ -13,11 +10,11 @@ final class FoodViewModel: ObservableObject {
     }
 
     @Published var cards: [FoodCard] = [
-        FoodCard(title: "اكل",        imageName: "food_eat"),
-        FoodCard(title: "اشرب",      imageName: "food_drink"),
-        FoodCard(title: " سناك",      imageName: "food_snack"),
-        FoodCard(title: " حلويات",    imageName: "food_dessert"),
-        FoodCard(title: "جوعان",         imageName: "food_hungry"),
-        FoodCard(title: "شبعان",         imageName: "food_full")
+        FoodCard(title: "شوكولاتة", imageName: "chocolate"),
+        FoodCard(title: "موية", imageName: "water"),
+        FoodCard(title: "بطاطس", imageName: "fries"),
+        FoodCard(title: "حليب", imageName: "milk"),
+        FoodCard(title: "معكرونة", imageName: "pasta"),
+        FoodCard(title: "شطيرة", imageName: "sandwich")
     ]
 }

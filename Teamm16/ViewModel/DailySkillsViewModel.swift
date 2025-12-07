@@ -26,12 +26,12 @@ final class DailySkillsViewModel: ObservableObject {
 
     private func loadCards() {
         cards = [
-            SkillCard(title: "أبي أروح الحمام",   imageName: "skill_bathroom"),
-            SkillCard(title: "أبي أنام",          imageName: "skill_sleep"),
-            SkillCard(title: "أبي ألبس",          imageName: "skill_dress"),
-            SkillCard(title: "أبي ألعب",          imageName: "skill_play"),
-            SkillCard(title: "أبي أشوف أمي / أبوي", imageName: "skill_parents"),
-            SkillCard(title: "أبي مساعده",        imageName: "skill_help")
+            SkillCard(title: " الحمام",   imageName: "skill_bathroom"),
+            SkillCard(title: " انام",          imageName: "skill_sleep"),
+            SkillCard(title: " البس",          imageName: "skill_dress"),
+            SkillCard(title: " العب",          imageName: "skill_play"),
+            SkillCard(title: "اهلي", imageName: "skill_parents"),
+            SkillCard(title: " مساعده",        imageName: "skill_help")
         ]
     }
 }

@@ -12,6 +12,7 @@ struct CustomSectionView: View {
             Color(hex: "FAF9F6").ignoresSafeArea()
 
             VStack(spacing: 24) {
+
                 header
 
                 if viewModel.cards.isEmpty {
@@ -31,7 +32,29 @@ struct CustomSectionView: View {
                                 NavigationLink {
                                     CustomCardDetailView(card: card)
                                 } label: {
-                                    cardCell(card)
+                                    VStack(spacing: 8) {
+                                        Image(uiImage: card.image)
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(width: 150, height: 150)
+                                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 20)
+                                                    .stroke(Color.black.opacity(0.2), lineWidth: 1)
+                                            )
+
+                                        Text(card.caption)
+                                            .font(.system(size: 20, design: .rounded))
+                                            .foregroundColor(Color(hex: "444444"))
+                                            .frame(maxWidth: .infinity)
+                                            .padding(.vertical, 6)
+                                            .background(Color(hex: "ADACFA").opacity(0.3))
+                                            .cornerRadius(10)
+                                    }
+                                    .padding(10)
+                                    .background(Color.white)
+                                    .cornerRadius(24)
+                                    .shadow(color: .black.opacity(0.08), radius: 6, x: 0, y: 3)
                                 }
                                 .buttonStyle(.plain)
                             }
@@ -47,11 +70,16 @@ struct CustomSectionView: View {
                 viewModel.addCard(image: image, caption: caption)
             }
         }
-        .environment(\.layoutDirection, .rightToLeft)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                Text("")   // نخلي العنوان فاضي لأن عندنا كبسولة العنوان تحت
+            }
+        }
+        .environment(\.layoutDirection, .rightToLeft)
     }
 
-    // MARK: - الهيدر البنفسجي
+    // MARK: - الهيدر
 
     private var header: some View {
         HStack(spacing: 12) {
@@ -64,11 +92,12 @@ struct CustomSectionView: View {
                     .frame(width: 50, height: 50)
                     .overlay(
                         Image(systemName: "plus")
-                            .font(.system(size: 24, weight: .bold))
+                            .font(.system(size: 22, weight: .bold))
                             .foregroundColor(.black)
                     )
             }
 
+            // المستطيل البنفسجي (العنوان)
             Text("قسمي الخاص")
                 .font(.system(size: 22, weight: .semibold, design: .rounded))
                 .foregroundColor(.white)
@@ -77,52 +106,14 @@ struct CustomSectionView: View {
                 .background(Color(hex: "ADACFA"))
                 .cornerRadius(22)
 
-            // سهم يمين (شكل فقط)
-            Button { } label: {
-                Circle()
-                    .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                    .frame(width: 50, height: 50)
-                    .overlay(
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 20, weight: .bold))
-                            .foregroundColor(.black)
-                    )
-            }
+            // ما فيه زر سهم هنا – زر الرجوع بس حق الـ Navigation فوق
         }
         .padding(.horizontal, 24)
         .padding(.top, 16)
     }
-
-    // MARK: - خلية الكرت في الشبكة
-
-    private func cardCell(_ card: CustomCardItem) -> some View {
-        VStack(spacing: 8) {
-            Image(uiImage: card.image)
-                .resizable()
-                .scaledToFill()
-                .frame(width: 150, height: 150)
-                .clipShape(RoundedRectangle(cornerRadius: 20))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 20)
-                        .stroke(Color.black.opacity(0.2), lineWidth: 1)
-                )
-
-            Text(card.caption)
-                .font(.system(size: 20, design: .rounded))
-                .foregroundColor(Color(hex: "444444"))
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 6)
-                .background(Color(hex: "ADACFA").opacity(0.3))
-                .cornerRadius(10)
-        }
-        .padding(10)
-        .background(Color.white)
-        .cornerRadius(24)
-        .shadow(color: .black.opacity(0.08), radius: 6, x: 0, y: 3)
-    }
 }
 
-// MARK: - شاشة إضافة كرت جديد
+// MARK: - شاشة إضافة كرت
 
 struct AddCustomCardView: View {
     @Environment(\.dismiss) private var dismiss
@@ -142,7 +133,6 @@ struct AddCustomCardView: View {
 
             VStack(spacing: 30) {
 
-                // اختيار الصورة
                 Button {
                     showImagePickerOptions = true
                 } label: {
@@ -180,7 +170,6 @@ struct AddCustomCardView: View {
                     Button("إلغاء", role: .cancel) { }
                 }
 
-                // حقل النص
                 VStack(alignment: .leading, spacing: 8) {
                     Text("تعبير للصورة")
                         .font(.headline)
@@ -199,7 +188,6 @@ struct AddCustomCardView: View {
 
                 Spacer()
 
-                // زر تم
                 Button {
                     if let img = selectedImage, !captionText.isEmpty {
                         onSave(img, captionText)
@@ -207,17 +195,31 @@ struct AddCustomCardView: View {
                     }
                 } label: {
                     Text("تم")
-                        .font(.title2.bold())
+                        .font(.system(size: 22, weight: .bold))
                         .foregroundColor(.black)
                         .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color(hex: "FDE88D"))
-                        .cornerRadius(16)
+                        .padding(.vertical, 14)
+                        .background(
+                            RoundedRectangle(cornerRadius: 24)
+                                .fill(Color(hex: "FDE88D"))
+                                .shadow(radius: 3)
+                        )
+                        .padding(.horizontal, 40)
+                        .padding(.bottom, 24)
                 }
                 .disabled(selectedImage == nil || captionText.isEmpty)
                 .opacity((selectedImage == nil || captionText.isEmpty) ? 0.5 : 1)
-                .padding(.horizontal, 40)
-                .padding(.bottom, 24)
+            }
+            .padding(.top, 32)
+        }
+        .navigationTitle("إضافة")
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button { dismiss() } label: {
+                    Image(systemName: "chevron.right")
+                        .foregroundColor(Color(hex: "444444"))
+                }
             }
         }
         .sheet(isPresented: $showCamera) {
@@ -229,7 +231,7 @@ struct AddCustomCardView: View {
     }
 }
 
-// MARK: - شاشة التفاصيل + الإيموجيز
+// MARK: - شاشة التفاصيل
 
 struct CustomCardDetailView: View {
     let card: CustomCardItem
@@ -334,7 +336,7 @@ struct CustomCardDetailView: View {
     }
 }
 
-// MARK: - ImagePicker + Color hex
+// MARK: - ImagePicker
 
 struct ImagePicker: UIViewControllerRepresentable {
     var sourceType: UIImagePickerController.SourceType
@@ -367,6 +369,8 @@ struct ImagePicker: UIViewControllerRepresentable {
     }
 }
 
+// MARK: - Color hex (تأكدي ما فيه نسخة ثانية بنفس الاسم)
+
 extension Color {
     init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
@@ -376,11 +380,13 @@ extension Color {
         let a, r, g, b: UInt64
         switch hex.count {
         case 3:
-            (a, r, g, b) = (255, (int >> 8) * 17,
+            (a, r, g, b) = (255,
+                            (int >> 8) * 17,
                             (int >> 4 & 0xF) * 17,
                             (int & 0xF) * 17)
         case 6:
-            (a, r, g, b) = (255, int >> 16,
+            (a, r, g, b) = (255,
+                            int >> 16,
                             int >> 8 & 0xFF,
                             int & 0xFF)
         case 8:

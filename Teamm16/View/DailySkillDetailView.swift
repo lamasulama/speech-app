@@ -40,7 +40,7 @@ struct DailySkillDetailView: View {
                     Spacer()
                 }
                 .padding(.horizontal, 24)
-                .padding(.top, 12)
+               .padding(.top, 12)
 
                 // الكرت الكبير (baby blue)
                 VStack {
@@ -82,7 +82,7 @@ struct DailySkillDetailView: View {
             }
         }
         .navigationBarBackButtonHidden(true)
-        .navigationTitle("Show card")
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
     }
 

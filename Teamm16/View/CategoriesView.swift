@@ -84,7 +84,7 @@ struct CategoriesView: View {
         case .dailySkills:
             DailySkillsView()
         case .food:
-            Text("الطعام (لاحقاً)") // مؤقتاً
+            FoodView()// مؤقتاً
 
         case .custom:
             CustomSectionView()

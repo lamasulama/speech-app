@@ -7,10 +7,11 @@ struct FoodDetailView: View {
     
     @State private var selectedReaction: String? = nil
     
-    private let emojis = ["👎", "👍", "❤️", "😊"]
-
-    // لون الكرت البيتش
+    // نفس لون الكارد في DailySkillDetailView
     private let cardBackground = Color(hex: "FFE6D5")
+    
+    // نفس الإيموجيز
+    private let emojis = ["👎", "👍", "❤️", "😊"]
 
     var body: some View {
         ZStack {
@@ -18,7 +19,7 @@ struct FoodDetailView: View {
 
             VStack(spacing: 24) {
 
-                // 🔙 زر رجوع واحد فقط (نفس ديلي سكلز)
+                // زر الرجوع – نفس DailySkillDetailView
                 HStack {
                     Button {
                         dismiss()
@@ -39,7 +40,7 @@ struct FoodDetailView: View {
                 .padding(.horizontal, 24)
                 .padding(.top, 12)
 
-                // 🔶 الكرت – نفس مقاس DailySkillDetailView بالضبط لكن Peach
+                // الكرت الكبير – نفس السايز تماماً
                 VStack {
                     Image(card.imageName)
                         .resizable()
@@ -49,7 +50,7 @@ struct FoodDetailView: View {
                 .frame(maxWidth: .infinity, maxHeight: 360)
                 .background(
                     RoundedRectangle(cornerRadius: 32)
-                        .fill(cardBackground)
+                        .fill(cardBackground)   // أزرق فاتح مثل ديلي سكلز
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 32)
@@ -57,7 +58,7 @@ struct FoodDetailView: View {
                 )
                 .padding(.horizontal, 24)
 
-                // 🔶 العنوان داخل كابسولة بنفس عرض ديلي سكلز، بلون Peach
+                // العنوان – نفس الزر الأصفر في DailySkillDetailView
                 Text(card.title)
                     .font(.system(size: 26, weight: .bold))
                     .foregroundColor(.black)
@@ -65,53 +66,55 @@ struct FoodDetailView: View {
                     .padding(.vertical, 14)
                     .background(
                         RoundedRectangle(cornerRadius: 24)
-                            .fill(cardBackground)
+                            .fill(Color(red: 0.98, green: 0.82, blue: 0.34)) // الأصفر نفسه
                             .shadow(radius: 3)
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 24)
-                            .stroke(Color.black.opacity(0.18), lineWidth: 1.2)
                     )
                     .padding(.horizontal, 40)
 
                 Spacer()
 
-                // 😄 صف الإيموجيز في الأسفل (بدون زر تم تحتها)
-                HStack(spacing: 18) {
-                    ForEach(emojis, id: \.self) { emoji in
-                        Button {
-                            selectedReaction = emoji
-                        } label: {
-                            Text(emoji)
-                                .font(.system(size: 34))
-                                .frame(width: 70, height: 70)
-                                .background(
-                                    selectedReaction == emoji
-                                    ? Color(hex: "D2F1D9")
-                                    : Color.white
-                                )
-                                .clipShape(Circle())
-                                .overlay(
-                                    Circle().stroke(
-                                        selectedReaction == emoji
-                                        ? Color(hex: "30D158")
-                                        : Color.gray.opacity(0.3),
-                                        lineWidth: 2
-                                    )
-                                )
-                        }
-                    }
-                }
-                .padding()
-                .background(Color.white)
-                .cornerRadius(20)
-                .shadow(radius: 3)
-                .padding(.horizontal, 16)
-                .padding(.bottom, 32)
+                // صف الإيموجيز – نفس ستايل DailySkillDetailView
+                reactionRow
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 32)
             }
         }
-        .navigationBarBackButtonHidden(true)   // ما نبي السهم الافتراضي
-        // لا تحطين toolbar هنا عشان ما يطلع زر ثاني
+        .navigationBarBackButtonHidden(true)
+        .navigationTitle("")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    // MARK: - صف التفاعل
+    private var reactionRow: some View {
+        HStack(spacing: 18) {
+            ForEach(emojis, id: \.self) { emoji in
+                Button {
+                    selectedReaction = emoji
+                } label: {
+                    Circle()
+                        .fill(
+                            selectedReaction == emoji
+                            ? Color.green.opacity(0.2)
+                            : Color.white
+                        )
+                        .frame(width: 56, height: 56)
+                        .overlay(
+                            Text(emoji)
+                                .font(.system(size: 28))
+                        )
+                        .overlay(
+                            Circle()
+                                .stroke(Color.black.opacity(0.12), lineWidth: 1)
+                        )
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(10)
+        .background(
+            RoundedRectangle(cornerRadius: 24)
+                .fill(Color.white)
+                .shadow(radius: 2)
+        )
     }
 }
-
