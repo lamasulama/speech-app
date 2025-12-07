@@ -1,11 +1,3 @@
-//
-//  CustomSectionView.swift
-//  Teamm16
-//
-//  Created by lama bin slmah on 03/12/2025.
-//
-
-
 import SwiftUI
 import UIKit
 
@@ -13,17 +5,15 @@ import UIKit
 
 struct CustomSectionView: View {
     @StateObject private var viewModel = CustomCardsViewModel()
-    
     @State private var isShowingAddCard = false
-    
+
     var body: some View {
         ZStack {
             Color(hex: "FAF9F6").ignoresSafeArea()
-            
+
             VStack(spacing: 24) {
-                // الهيدر (على شكل المستطيل البنفسجي + علامة +)
                 header
-                
+
                 if viewModel.cards.isEmpty {
                     Spacer()
                     Text("أضف بطاقاتك الخاصة فيك ;)")
@@ -33,35 +23,15 @@ struct CustomSectionView: View {
                     Spacer()
                 } else {
                     ScrollView {
-                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())],
-                                  spacing: 20) {
+                        LazyVGrid(
+                            columns: [GridItem(.flexible()), GridItem(.flexible())],
+                            spacing: 20
+                        ) {
                             ForEach(viewModel.cards) { card in
                                 NavigationLink {
                                     CustomCardDetailView(card: card)
                                 } label: {
-                                    VStack(spacing: 8) {
-                                        Image(uiImage: card.image)
-                                            .resizable()
-                                            .scaledToFill()
-                                            .frame(width: 150, height: 150)
-                                            .clipShape(RoundedRectangle(cornerRadius: 20))
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 20)
-                                                    .stroke(Color.black.opacity(0.2), lineWidth: 1)
-                                            )
-                                        
-                                        Text(card.caption)
-                                            .font(.system(size: 20, design: .rounded))
-                                            .foregroundColor(Color(hex: "444444"))
-                                            .frame(maxWidth: .infinity)
-                                            .padding(.vertical, 6)
-                                            .background(Color(hex: "ADACFA").opacity(0.3))
-                                            .cornerRadius(10)
-                                    }
-                                    .padding(10)
-                                    .background(Color.white)
-                                    .cornerRadius(24)
-                                    .shadow(color: .black.opacity(0.08), radius: 6, x: 0, y: 3)
+                                    cardCell(card)
                                 }
                                 .buttonStyle(.plain)
                             }
@@ -77,18 +47,12 @@ struct CustomSectionView: View {
                 viewModel.addCard(image: image, caption: caption)
             }
         }
-        // نخلي الـ back button العادي شغال
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .principal) {
-                Text("") // نخفي عنوان النافبار
-            }
-        }
         .environment(\.layoutDirection, .rightToLeft)
+        .navigationBarTitleDisplayMode(.inline)
     }
-    
-    // MARK: header
-    
+
+    // MARK: - الهيدر البنفسجي
+
     private var header: some View {
         HStack(spacing: 12) {
             // زر +
@@ -100,12 +64,11 @@ struct CustomSectionView: View {
                     .frame(width: 50, height: 50)
                     .overlay(
                         Image(systemName: "plus")
-                            .font(.system(size: 22, weight: .bold))
+                            .font(.system(size: 24, weight: .bold))
                             .foregroundColor(.black)
                     )
             }
-            
-            // المستطيل البنفسجي (العنوان)
+
             Text("قسمي الخاص")
                 .font(.system(size: 22, weight: .semibold, design: .rounded))
                 .foregroundColor(.white)
@@ -113,11 +76,9 @@ struct CustomSectionView: View {
                 .padding(.vertical, 10)
                 .background(Color(hex: "ADACFA"))
                 .cornerRadius(22)
-            
-            // سهم يمين (حالياً بدون وظيفة – بس شكل)
-            Button {
-                // ممكن لاحقاً نسوي له وظيفة (سلايد شو مثلاً)
-            } label: {
+
+            // سهم يمين (شكل فقط)
+            Button { } label: {
                 Circle()
                     .stroke(Color.gray.opacity(0.3), lineWidth: 1)
                     .frame(width: 50, height: 50)
@@ -131,29 +92,57 @@ struct CustomSectionView: View {
         .padding(.horizontal, 24)
         .padding(.top, 16)
     }
+
+    // MARK: - خلية الكرت في الشبكة
+
+    private func cardCell(_ card: CustomCardItem) -> some View {
+        VStack(spacing: 8) {
+            Image(uiImage: card.image)
+                .resizable()
+                .scaledToFill()
+                .frame(width: 150, height: 150)
+                .clipShape(RoundedRectangle(cornerRadius: 20))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(Color.black.opacity(0.2), lineWidth: 1)
+                )
+
+            Text(card.caption)
+                .font(.system(size: 20, design: .rounded))
+                .foregroundColor(Color(hex: "444444"))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 6)
+                .background(Color(hex: "ADACFA").opacity(0.3))
+                .cornerRadius(10)
+        }
+        .padding(10)
+        .background(Color.white)
+        .cornerRadius(24)
+        .shadow(color: .black.opacity(0.08), radius: 6, x: 0, y: 3)
+    }
 }
 
-// MARK: - شاشة إضافة كرت
+// MARK: - شاشة إضافة كرت جديد
 
 struct AddCustomCardView: View {
     @Environment(\.dismiss) private var dismiss
-    
+
     @State private var selectedImage: UIImage? = nil
     @State private var captionText: String = ""
-    
+
     @State private var showImagePickerOptions = false
     @State private var showCamera = false
     @State private var showPhotoLibrary = false
-    
-    // نرجع الكرت الجديد للشاشة الرئيسية
+
     let onSave: (UIImage, String) -> Void
-    
+
     var body: some View {
         ZStack {
             Color(hex: "FAF9F6").ignoresSafeArea()
-            
+
             VStack(spacing: 30) {
-                // منطقة الصورة
+
+                // اختيار الصورة
                 Button {
                     showImagePickerOptions = true
                 } label: {
@@ -164,7 +153,7 @@ struct AddCustomCardView: View {
                                 RoundedRectangle(cornerRadius: 24)
                                     .stroke(Color(hex: "0FA618"), lineWidth: 2)
                             )
-                        
+
                         if let image = selectedImage {
                             Image(uiImage: image)
                                 .resizable()
@@ -176,7 +165,7 @@ struct AddCustomCardView: View {
                                 Image(systemName: "paperclip")
                                     .font(.system(size: 60))
                                     .foregroundColor(Color(hex: "444444"))
-                                
+
                                 Text("أضف ملف الصورة")
                                     .font(.system(size: 20, design: .rounded))
                                     .foregroundColor(Color(hex: "444444"))
@@ -190,13 +179,13 @@ struct AddCustomCardView: View {
                     Button("اختيار صورة") { showPhotoLibrary = true }
                     Button("إلغاء", role: .cancel) { }
                 }
-                
+
                 // حقل النص
                 VStack(alignment: .leading, spacing: 8) {
                     Text("تعبير للصورة")
                         .font(.headline)
                         .foregroundColor(Color(hex: "756B6B"))
-                    
+
                     TextField("اكتب هنا...", text: $captionText)
                         .padding()
                         .background(Color.white)
@@ -207,33 +196,28 @@ struct AddCustomCardView: View {
                         )
                 }
                 .padding(.horizontal, 32)
-                
+
                 Spacer()
-            }
-            .padding(.top, 32)
-        }
-        .navigationTitle("إضافة")
-        .navigationBarBackButtonHidden(true)
-        .toolbar {
-            // زر حفظ
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button("إضافة") {
+
+                // زر تم
+                Button {
                     if let img = selectedImage, !captionText.isEmpty {
                         onSave(img, captionText)
                         dismiss()
                     }
+                } label: {
+                    Text("تم")
+                        .font(.title2.bold())
+                        .foregroundColor(.black)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color(hex: "FDE88D"))
+                        .cornerRadius(16)
                 }
                 .disabled(selectedImage == nil || captionText.isEmpty)
-            }
-            
-            // زر رجوع
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button {
-                    dismiss()
-                } label: {
-                    Image(systemName: "chevron.right")
-                        .foregroundColor(Color(hex: "444444"))
-                }
+                .opacity((selectedImage == nil || captionText.isEmpty) ? 0.5 : 1)
+                .padding(.horizontal, 40)
+                .padding(.bottom, 24)
             }
         }
         .sheet(isPresented: $showCamera) {
@@ -245,23 +229,22 @@ struct AddCustomCardView: View {
     }
 }
 
-// MARK: - شاشة التفاصيل + الإيموجي
+// MARK: - شاشة التفاصيل + الإيموجيز
 
 struct CustomCardDetailView: View {
     let card: CustomCardItem
     @Environment(\.dismiss) private var dismiss
     @State private var selectedReaction: String? = nil
-    
-    // نفس الفكرة اللي سويناها بالمشاعر
+
     private let emojis = ["👎", "👍", "❤️", "😊"]
-    
+
     var body: some View {
         ZStack {
             Color(hex: "FAF9F6").ignoresSafeArea()
-            
+
             VStack {
                 Spacer()
-                
+
                 VStack(spacing: 0) {
                     Image(uiImage: card.image)
                         .resizable()
@@ -274,7 +257,7 @@ struct CustomCardDetailView: View {
                                 .stroke(Color.black.opacity(0.18), lineWidth: 1.5)
                         )
                         .cornerRadius(24)
-                    
+
                     Text(card.caption)
                         .font(.system(size: 36, weight: .bold, design: .rounded))
                         .multilineTextAlignment(.center)
@@ -288,10 +271,9 @@ struct CustomCardDetailView: View {
                         )
                         .padding(.top, 12)
                 }
-                
+
                 Spacer()
-                
-                // صف الإيموجي
+
                 HStack(spacing: 18) {
                     ForEach(emojis, id: \.self) { emoji in
                         Button {
@@ -300,7 +282,11 @@ struct CustomCardDetailView: View {
                             Text(emoji)
                                 .font(.system(size: 34))
                                 .frame(width: 70, height: 70)
-                                .background(selectedReaction == emoji ? Color(hex: "D2F1D9") : Color.white)
+                                .background(
+                                    selectedReaction == emoji
+                                    ? Color(hex: "D2F1D9")
+                                    : Color.white
+                                )
                                 .clipShape(Circle())
                                 .overlay(
                                     Circle().stroke(
@@ -318,9 +304,9 @@ struct CustomCardDetailView: View {
                 .cornerRadius(24)
                 .shadow(radius: 3)
                 .padding(.horizontal, 24)
-                
+
                 Spacer()
-                
+
                 Button {
                     dismiss()
                 } label: {
@@ -348,27 +334,27 @@ struct CustomCardDetailView: View {
     }
 }
 
-// MARK: - ImagePicker (نفس الفكرة اللي عطيتِني)
+// MARK: - ImagePicker + Color hex
 
 struct ImagePicker: UIViewControllerRepresentable {
     var sourceType: UIImagePickerController.SourceType
     @Binding var selectedImage: UIImage?
-    
+
     func makeUIViewController(context: Context) -> UIImagePickerController {
         let picker = UIImagePickerController()
         picker.sourceType = sourceType
         picker.delegate = context.coordinator
         return picker
     }
-    
+
     func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
-    
+
     func makeCoordinator() -> Coordinator { Coordinator(self) }
-    
+
     class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
         let parent: ImagePicker
         init(_ parent: ImagePicker) { self.parent = parent }
-        
+
         func imagePickerController(
             _ picker: UIImagePickerController,
             didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]
@@ -381,14 +367,12 @@ struct ImagePicker: UIViewControllerRepresentable {
     }
 }
 
-// MARK: - ألوان من hex
-
 extension Color {
     init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
         var int: UInt64 = 0
         Scanner(string: hex).scanHexInt64(&int)
-        
+
         let a, r, g, b: UInt64
         switch hex.count {
         case 3:
@@ -407,7 +391,7 @@ extension Color {
         default:
             (a, r, g, b) = (255, 0, 0, 0)
         }
-        
+
         self.init(.sRGB,
                   red:   Double(r) / 255,
                   green: Double(g) / 255,
