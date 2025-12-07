@@ -1,105 +1,87 @@
+
 import SwiftUI
 
 struct DailySkillsView: View {
 
     @StateObject private var viewModel = DailySkillsViewModel()
 
-    // عمودين في كل صف
+    // نفس أعمدة EmotionsView
     private let columns = [
-        GridItem(.flexible(), spacing: 40),
-        GridItem(.flexible(), spacing:40)
+        GridItem(.flexible(), spacing: 16),
+        GridItem(.flexible(), spacing: 16)
     ]
 
     var body: some View {
         ZStack {
-            // الخلفية السوداء خلف الكرت
-            Color.white.opacity(0.9)
-                .ignoresSafeArea()
+            Color.white.ignoresSafeArea()
 
-            ScrollView(showsIndicators: false) {
-                VStack {
-                    // الكرت الأبيض الكبير
-                    RoundedRectangle(cornerRadius: 40)
-                        .fill(Color.white)
-                        .shadow(radius: 10)
-                        .padding(40)
+            VStack(spacing: 16) {
+
+                // الكبسولة الزرقاء العلوية (نفس فكرة المشاعر بس بلون الأزرق)
+                HStack {
+                    Spacer()
+
+                    Capsule()
+                        .fill(Color(red: 0.61, green: 0.80, blue: 1.0))
+                        .frame(height: 40)
                         .overlay(
-                            VStack(spacing: 24) {
-
-                                // الهيدر: + العنوان الأزرق + السهم
-                                HStack(spacing: 16) {
-
-                                    // زر +
-                             
-
-                                    Spacer()
-
-                                    // عنوان الفئة
-                                    Text("مهارات الحياة اليومية")
-                                        .font(.system(size: 20, weight: .semibold))
-                                        .foregroundColor(.white)
-                                        .padding(.vertical, 10)
-                                        .padding(.horizontal, 24)
-                                        .background(
-                                            RoundedRectangle(cornerRadius: 26)
-                                                .fill(Color(red: 0.61, green: 0.80, blue: 1.0))
-                                        )
-
-                                    // زر السهم (ما عليه أكشن حالياً)
-                          
-                                }
-
-                                // شبكة الكروت
-                                LazyVGrid(columns: columns, spacing: 24) {
-                                    ForEach(viewModel.cards) { card in
-                                        NavigationLink {
-                                            DailySkillDetailView(card: card)
-                                        } label: {
-                                            skillCardView(card)
-                                        }
-                                        .buttonStyle(.plain)
-                                    }
-                                }
-
-                                Spacer(minLength: 8)
-                            }
-                            .padding(24)
+                            Text("مهارات الحياة اليومية")
+                                .font(.system(size: 18, weight: .semibold))
+                                .foregroundColor(.white)
                         )
-                        .padding(.horizontal, 16)
-                        .padding(.top, 300)
-                        .padding(.bottom, 24)
+                
+                    Spacer()
                 }
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+
+                // الشبكة
+                ScrollView(showsIndicators: false) {
+                    LazyVGrid(columns: columns, spacing: 16) {
+                        ForEach(viewModel.cards) { card in
+                            NavigationLink {
+                                DailySkillDetailView(card: card)
+                            } label: {
+                                skillCardView(card)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                }
+
+                Spacer()
             }
         }
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
-        // مهم: لا نخبّي زر الرجوع هنا عشان تقدرين ترجعي
-        // .navigationBarBackButtonHidden(false) // نقدر حتى ما نكتبها
     }
 
-    // شكل الكرت الأزرق
+    // الكرت – نفس مقاسات EmotionsView بالضبط
     private func skillCardView(_ card: DailySkillsViewModel.SkillCard) -> some View {
         VStack(spacing: 8) {
             Image(card.imageName)
                 .resizable()
                 .scaledToFit()
-                .padding(12)
+                .frame(height: 70)          // نفس ارتفاع صورة المشاعر
 
             Text(card.title)
                 .font(.system(size: 18))
                 .foregroundColor(.black)
                 .multilineTextAlignment(.center)
         }
-        .padding(.vertical, 16)
-        .frame(maxWidth: .infinity)
+        .padding(12)
+        .frame(maxWidth: .infinity, minHeight: 140)   // نفس ارتفاع الكرت بالمشاعر
         .background(
-            RoundedRectangle(cornerRadius: 26)
-                .fill(Color(red: 0.90, green: 0.94, blue: 1.0))   // أزرق فاتح زي الصورة
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color(red: 0.90, green: 0.94, blue: 1.0))   // أزرق فاتح
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 26)
-                .stroke(Color.black.opacity(0.12), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(Color.black.opacity(0.18), lineWidth: 1.5)
         )
+        .cornerRadius(16)
     }
 }
 

@@ -1,10 +1,3 @@
-//
-//  DailySkillDetailView.swift
-//  Teamm16
-//
-//  Created by lama bin slmah on 03/12/2025.
-//
-
 
 import SwiftUI
 
@@ -19,7 +12,8 @@ struct DailySkillDetailView: View {
         )
     }
 
-    private let cardBackground = Color(red: 1.0, green: 0.98, blue: 0.91)
+    // 🔵 لون الكرت الجديد (baby blue نفس اللي في grid)
+    private let cardBackground = Color(red: 0.90, green: 0.94, blue: 1.0)
 
     var body: some View {
         ZStack {
@@ -48,7 +42,7 @@ struct DailySkillDetailView: View {
                 .padding(.horizontal, 24)
                 .padding(.top, 12)
 
-                // الكرت الكبير
+                // الكرت الكبير (baby blue)
                 VStack {
                     Image(viewModel.card.imageName)
                         .resizable()
@@ -66,7 +60,7 @@ struct DailySkillDetailView: View {
                 )
                 .padding(.horizontal, 24)
 
-                // العنوان
+                // العنوان (يبقى أصفر مثل ما هو)
                 Text(viewModel.card.title)
                     .font(.system(size: 26, weight: .bold))
                     .foregroundColor(.black)
@@ -81,7 +75,7 @@ struct DailySkillDetailView: View {
 
                 Spacer()
 
-                // سطر الإيموجي (نفس المشاعر)
+                // سطر الإيموجي
                 reactionRow
                     .padding(.horizontal, 24)
                     .padding(.bottom, 32)
@@ -123,7 +117,7 @@ struct DailySkillDetailView: View {
 
     private func backgroundColor(for reaction: EmotionReaction) -> Color {
         if viewModel.selectedReaction == reaction {
-            return Color.green.opacity(0.2)   // الهايلايت الأخضر
+            return Color.green.opacity(0.2)
         } else {
             return Color.white
         }

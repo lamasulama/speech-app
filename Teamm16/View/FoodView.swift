@@ -1,3 +1,4 @@
+
 import SwiftUI
 
 struct FoodView: View {
@@ -16,12 +17,12 @@ struct FoodView: View {
 
             VStack(spacing: 16) {
 
-                // كبسولة العنوان (برتقالي زي كرت الطعام في الصفحة الرئيسية)
+                // كبسولة العنوان
                 HStack {
                     Spacer()
 
                     Capsule()
-                        .fill(Color(red: 0.95, green: 0.52, blue: 0.40))
+                        .fill(Color(red: 0.95, green: 0.52, blue: 0.40)) // اللون البرتقالي للطعام
                         .frame(height: 40)
                         .overlay(
                             Text("الطعام")
@@ -39,10 +40,9 @@ struct FoodView: View {
                     LazyVGrid(columns: columns, spacing: 16) {
                         ForEach(viewModel.cards) { card in
                             NavigationLink {
-                                // لو عندك شاشة تفاصيل للطعام حطيها هنا
-                                // FoodDetailView(card: card)
-                                Text(card.title)   // مؤقتاً
+                                FoodDetailView(card: card)
                             } label: {
+
                                 foodCardView(card)
                             }
                             .buttonStyle(.plain)
@@ -59,13 +59,13 @@ struct FoodView: View {
         .navigationBarTitleDisplayMode(.inline)
     }
 
-    // الكرت – نفس مقاس كرت المشاعر تماماً
+    // كرت الطعام — Light Peach + نفس مقاسات المشاعر
     private func foodCardView(_ card: FoodViewModel.FoodCard) -> some View {
         VStack(spacing: 8) {
             Image(card.imageName)
                 .resizable()
                 .scaledToFit()
-                .frame(height: 70)
+                .frame(height: 70)  // نفس المشاعر
 
             Text(card.title)
                 .font(.system(size: 18))
@@ -73,10 +73,10 @@ struct FoodView: View {
                 .multilineTextAlignment(.center)
         }
         .padding(12)
-        .frame(maxWidth: .infinity, minHeight: 140)
+        .frame(maxWidth: .infinity, minHeight: 140) // نفس ارتفاع كرت المشاعر
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color(red: 1.0, green: 0.98, blue: 0.92)) // نفس خلفية المشاعر بس تقدرين تغيرينها
+                .fill(Color(hex: "FFE6D5"))   // ⭐ Light Peach
         )
         .overlay(
             RoundedRectangle(cornerRadius: 16)
