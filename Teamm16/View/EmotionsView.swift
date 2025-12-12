@@ -28,7 +28,7 @@ struct EmotionsView: View {
                         .fill(Color(red: 0.98, green: 0.82, blue: 0.34))
                         .frame(height: 40)
                         .overlay(
-                            Text("المشاعر والأحاسيس")
+                            Text("مشاعري")
                                 .font(.system(size: 18, weight: .semibold))
                                 .foregroundColor(.white)
                         )

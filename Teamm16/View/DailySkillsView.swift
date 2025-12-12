@@ -25,7 +25,7 @@ struct DailySkillsView: View {
                         .fill(Color(red: 0.61, green: 0.80, blue: 1.0))
                         .frame(height: 40)
                         .overlay(
-                            Text("مهارات الحياة اليومية")
+                            Text("الحياة اليومية")
                                 .font(.system(size: 18, weight: .semibold))
                                 .foregroundColor(.white)
                         )

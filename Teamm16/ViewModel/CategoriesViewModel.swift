@@ -12,13 +12,13 @@ final class CategoriesViewModel: ObservableObject {
         
         categories = [
             CategoryItem(
-                title: "المشاعر والأحاسيس",
+                title: "مشاعري",
                 iconName: "emotionsIcon",
                 backgroundColor: Color(red: 0.98, green: 0.82, blue: 0.34),
                 kind: .emotions
             ),
             CategoryItem(
-                title: "مهارات الحياة اليومية",
+                title: "الحياة اليومية",
                 iconName: "dailySkillsIcon",
                 backgroundColor: Color(red: 0.61, green: 0.80, blue: 1.0),
                 kind: .dailySkills
