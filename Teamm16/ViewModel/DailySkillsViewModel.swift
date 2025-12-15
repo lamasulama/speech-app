@@ -11,6 +11,18 @@ import SwiftUI
 import Combine
 
 final class DailySkillsViewModel: ObservableObject {
+    // MARK: - ViewModel
+
+    @MainActor
+    class DailySkillDetailViewModel: ObservableObject {
+        
+        @Published var card: DailySkillsViewModel.SkillCard
+        
+        init(card: DailySkillsViewModel.SkillCard) {
+            self.card = card
+        }
+    }
+
 
     struct SkillCard: Identifiable {
         let id = UUID()

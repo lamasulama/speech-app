@@ -10,8 +10,7 @@ struct FoodDetailView: View {
     // نفس لون الكارد في DailySkillDetailView
     private let cardBackground = Color(hex: "FFE6D5")
     
-    // نفس الإيموجيز
-    private let emojis = ["👎", "👍", "❤️", "😊"]
+    
 
     var body: some View {
         ZStack {
@@ -73,10 +72,8 @@ struct FoodDetailView: View {
 
                 Spacer()
 
-                // صف الإيموجيز – نفس ستايل DailySkillDetailView
-                reactionRow
-                    .padding(.horizontal, 24)
-                    .padding(.bottom, 32)
+             
+               
             }
         }
         .navigationBarBackButtonHidden(true)
@@ -85,36 +82,6 @@ struct FoodDetailView: View {
     }
 
     // MARK: - صف التفاعل
-    private var reactionRow: some View {
-        HStack(spacing: 18) {
-            ForEach(emojis, id: \.self) { emoji in
-                Button {
-                    selectedReaction = emoji
-                } label: {
-                    Circle()
-                        .fill(
-                            selectedReaction == emoji
-                            ? Color.green.opacity(0.2)
-                            : Color.white
-                        )
-                        .frame(width: 56, height: 56)
-                        .overlay(
-                            Text(emoji)
-                                .font(.system(size: 28))
-                        )
-                        .overlay(
-                            Circle()
-                                .stroke(Color.black.opacity(0.12), lineWidth: 1)
-                        )
-                }
-                .buttonStyle(.plain)
-            }
-        }
-        .padding(10)
-        .background(
-            RoundedRectangle(cornerRadius: 24)
-                .fill(Color.white)
-                .shadow(radius: 2)
-        )
+   
     }
-}
+

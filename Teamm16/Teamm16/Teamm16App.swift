@@ -6,14 +6,19 @@
 //
 
 import SwiftUI
+import SwiftData
+
 
 @main
 struct Teamm16App: App {
+
     var body: some Scene {
-            WindowGroup {
-                NavigationStack {
-                    InsideCategoryView()
-                }
+        WindowGroup {
+            NavigationStack {
+                InsideCategoryView()
             }
         }
+        .modelContainer(for: CustomCardEntity.self)
     }
+}
+

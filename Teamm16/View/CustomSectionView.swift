@@ -1,11 +1,20 @@
 import SwiftUI
 import UIKit
+import SwiftData
 
 // MARK: - شاشة قسمي الخاص
 
 struct CustomSectionView: View {
-    @StateObject private var viewModel = CustomCardsViewModel()
-    @State private var isShowingAddCard = false
+
+
+        @Environment(\.modelContext) private var modelContext
+        @StateObject private var viewModel: CustomCardsViewModel
+        @State private var isShowingAddCard = false
+
+        init() {
+            _viewModel = StateObject(wrappedValue: CustomCardsViewModel(context: ModelContext(try! ModelContainer(for: CustomCardEntity.self))))
+        }
+
 
     var body: some View {
         ZStack {
@@ -17,7 +26,7 @@ struct CustomSectionView: View {
 
                 if viewModel.cards.isEmpty {
                     Spacer()
-                    Text("أضف بطاقاتك الخاصة فيك ;)")
+                    Text("أضف بطاقاتك الخاصة 🌱")
                         .font(.system(size: 24, weight: .regular, design: .rounded))
                         .foregroundColor(Color(hex: "756B6B"))
                         .multilineTextAlignment(.center)
@@ -33,15 +42,18 @@ struct CustomSectionView: View {
                                     CustomCardDetailView(card: card)
                                 } label: {
                                     VStack(spacing: 8) {
-                                        Image(uiImage: card.image)
-                                            .resizable()
-                                            .scaledToFill()
-                                            .frame(width: 150, height: 150)
-                                            .clipShape(RoundedRectangle(cornerRadius: 20))
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 20)
-                                                    .stroke(Color.black.opacity(0.2), lineWidth: 1)
-                                            )
+
+                                        if let uiImage = UIImage(data: card.imageData) {
+                                            Image(uiImage: uiImage)
+                                                .resizable()
+                                                .scaledToFill()
+                                                .frame(width: 150, height: 150)
+                                                .clipShape(RoundedRectangle(cornerRadius: 20))
+                                                .overlay(
+                                                    RoundedRectangle(cornerRadius: 20)
+                                                        .stroke(Color.black.opacity(0.2), lineWidth: 1)
+                                                )
+                                        }
 
                                         Text(card.caption)
                                             .font(.system(size: 20, design: .rounded))
@@ -65,17 +77,15 @@ struct CustomSectionView: View {
                 }
             }
         }
+        .onAppear {
+            viewModel.fetchCards()
+        }
         .sheet(isPresented: $isShowingAddCard) {
             AddCustomCardView { image, caption in
                 viewModel.addCard(image: image, caption: caption)
             }
         }
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .principal) {
-                Text("")   // نخلي العنوان فاضي لأن عندنا كبسولة العنوان تحت
-            }
-        }
         .environment(\.layoutDirection, .rightToLeft)
     }
 
@@ -83,7 +93,7 @@ struct CustomSectionView: View {
 
     private var header: some View {
         HStack(spacing: 12) {
-            // زر +
+
             Button {
                 isShowingAddCard = true
             } label: {
@@ -97,7 +107,6 @@ struct CustomSectionView: View {
                     )
             }
 
-            // المستطيل البنفسجي (العنوان)
             Text("قسمي الخاص")
                 .font(.system(size: 22, weight: .semibold, design: .rounded))
                 .foregroundColor(.white)
@@ -105,21 +114,22 @@ struct CustomSectionView: View {
                 .padding(.vertical, 10)
                 .background(Color(hex: "ADACFA"))
                 .cornerRadius(22)
-
-            // ما فيه زر سهم هنا – زر الرجوع بس حق الـ Navigation فوق
         }
         .padding(.horizontal, 24)
         .padding(.top, 16)
     }
 }
 
+//////////////////////////////////////////////////////////////////
 // MARK: - شاشة إضافة كرت
+//////////////////////////////////////////////////////////////////
 
 struct AddCustomCardView: View {
+
     @Environment(\.dismiss) private var dismiss
 
-    @State private var selectedImage: UIImage? = nil
-    @State private var captionText: String = ""
+    @State private var selectedImage: UIImage?
+    @State private var captionText = ""
 
     @State private var showImagePickerOptions = false
     @State private var showCamera = false
@@ -138,7 +148,7 @@ struct AddCustomCardView: View {
                 } label: {
                     ZStack {
                         RoundedRectangle(cornerRadius: 24)
-                            .fill(selectedImage == nil ? Color(hex: "2DCB18").opacity(0.25) : Color.clear)
+                            .fill(selectedImage == nil ? Color(hex: "2DCB18").opacity(0.25) : .clear)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 24)
                                     .stroke(Color(hex: "0FA618"), lineWidth: 2)
@@ -154,12 +164,10 @@ struct AddCustomCardView: View {
                             VStack(spacing: 12) {
                                 Image(systemName: "paperclip")
                                     .font(.system(size: 60))
-                                    .foregroundColor(Color(hex: "444444"))
-
                                 Text("أضف ملف الصورة")
                                     .font(.system(size: 20, design: .rounded))
-                                    .foregroundColor(Color(hex: "444444"))
                             }
+                            .foregroundColor(Color(hex: "444444"))
                         }
                     }
                     .frame(width: 280, height: 280)
@@ -170,57 +178,29 @@ struct AddCustomCardView: View {
                     Button("إلغاء", role: .cancel) { }
                 }
 
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("تعبير للصورة")
-                        .font(.headline)
-                        .foregroundColor(Color(hex: "756B6B"))
-
-                    TextField("اكتب هنا...", text: $captionText)
-                        .padding()
-                        .background(Color.white)
-                        .cornerRadius(10)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color.gray.opacity(0.4), lineWidth: 1)
-                        )
-                }
-                .padding(.horizontal, 32)
+                TextField("اكتب التعبير هنا...", text: $captionText)
+                    .padding()
+                    .background(Color.white)
+                    .cornerRadius(10)
+                    .padding(.horizontal, 32)
 
                 Spacer()
 
-                Button {
-                    if let img = selectedImage, !captionText.isEmpty {
-                        onSave(img, captionText)
+                Button("تم") {
+                    if let image = selectedImage, !captionText.isEmpty {
+                        onSave(image, captionText)
                         dismiss()
                     }
-                } label: {
-                    Text("تم")
-                        .font(.system(size: 22, weight: .bold))
-                        .foregroundColor(.black)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
-                        .background(
-                            RoundedRectangle(cornerRadius: 24)
-                                .fill(Color(hex: "FDE88D"))
-                                .shadow(radius: 3)
-                        )
-                        .padding(.horizontal, 40)
-                        .padding(.bottom, 24)
                 }
+                .font(.system(size: 22, weight: .bold))
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color(hex: "FDE88D"))
+                .cornerRadius(24)
+                .padding(.horizontal, 40)
                 .disabled(selectedImage == nil || captionText.isEmpty)
-                .opacity((selectedImage == nil || captionText.isEmpty) ? 0.5 : 1)
             }
             .padding(.top, 32)
-        }
-        .navigationTitle("إضافة")
-        .navigationBarBackButtonHidden(true)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button { dismiss() } label: {
-                    Image(systemName: "chevron.right")
-                        .foregroundColor(Color(hex: "444444"))
-                }
-            }
         }
         .sheet(isPresented: $showCamera) {
             ImagePicker(sourceType: .camera, selectedImage: $selectedImage)
@@ -231,114 +211,60 @@ struct AddCustomCardView: View {
     }
 }
 
-// MARK: - شاشة التفاصيل
+//////////////////////////////////////////////////////////////////
+// MARK: - شاشة التفاصيل (بدون إيموجي)
+//////////////////////////////////////////////////////////////////
 
 struct CustomCardDetailView: View {
-    let card: CustomCardItem
-    @Environment(\.dismiss) private var dismiss
-    @State private var selectedReaction: String? = nil
 
-    private let emojis = ["👎", "👍", "❤️", "😊"]
+    let card: CustomCardEntity
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         ZStack {
             Color(hex: "FAF9F6").ignoresSafeArea()
 
-            VStack {
+            VStack(spacing: 20) {
+
                 Spacer()
 
-                VStack(spacing: 0) {
-                    Image(uiImage: card.image)
+                if let uiImage = UIImage(data: card.imageData) {
+                    Image(uiImage: uiImage)
                         .resizable()
                         .scaledToFill()
                         .frame(width: 320, height: 320)
-                        .clipped()
-                        .background(Color(hex: "FFF8E1"))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 24)
-                                .stroke(Color.black.opacity(0.18), lineWidth: 1.5)
-                        )
-                        .cornerRadius(24)
-
-                    Text(card.caption)
-                        .font(.system(size: 36, weight: .bold, design: .rounded))
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: 320)
-                        .padding()
-                        .background(Color(hex: "FDE88D"))
-                        .cornerRadius(20)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 20)
-                                .stroke(Color.black.opacity(0.18), lineWidth: 1.5)
-                        )
-                        .padding(.top, 12)
+                        .clipShape(RoundedRectangle(cornerRadius: 24))
                 }
+
+                Text(card.caption)
+                    .font(.system(size: 36, weight: .bold, design: .rounded))
+                    .multilineTextAlignment(.center)
+                    .padding()
+                    .background(Color(hex: "FDE88D"))
+                    .cornerRadius(20)
 
                 Spacer()
 
-                HStack(spacing: 18) {
-                    ForEach(emojis, id: \.self) { emoji in
-                        Button {
-                            selectedReaction = emoji
-                        } label: {
-                            Text(emoji)
-                                .font(.system(size: 34))
-                                .frame(width: 70, height: 70)
-                                .background(
-                                    selectedReaction == emoji
-                                    ? Color(hex: "D2F1D9")
-                                    : Color.white
-                                )
-                                .clipShape(Circle())
-                                .overlay(
-                                    Circle().stroke(
-                                        selectedReaction == emoji
-                                        ? Color(hex: "30D158")
-                                        : Color.gray.opacity(0.3),
-                                        lineWidth: 2
-                                    )
-                                )
-                        }
-                    }
-                }
-                .padding()
-                .background(Color.white)
-                .cornerRadius(24)
-                .shadow(radius: 3)
-                .padding(.horizontal, 24)
-
-                Spacer()
-
-                Button {
+                Button("تم") {
                     dismiss()
-                } label: {
-                    Text("تم")
-                        .font(.title2.bold())
-                        .foregroundColor(.black)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color(hex: "FDE88D"))
-                        .cornerRadius(16)
                 }
+                .font(.title2.bold())
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color(hex: "FDE88D"))
+                .cornerRadius(16)
                 .padding(.horizontal, 40)
-                .padding(.bottom, 24)
-            }
-        }
-        .navigationBarBackButtonHidden(true)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button { dismiss() } label: {
-                    Image(systemName: "chevron.right")
-                        .foregroundColor(Color(hex: "444444"))
-                }
             }
         }
     }
 }
 
+//////////////////////////////////////////////////////////////////
 // MARK: - ImagePicker
+//////////////////////////////////////////////////////////////////
 
 struct ImagePicker: UIViewControllerRepresentable {
+
     var sourceType: UIImagePickerController.SourceType
     @Binding var selectedImage: UIImage?
 
@@ -351,9 +277,12 @@ struct ImagePicker: UIViewControllerRepresentable {
 
     func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
 
-    func makeCoordinator() -> Coordinator { Coordinator(self) }
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
 
     class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+
         let parent: ImagePicker
         init(_ parent: ImagePicker) { self.parent = parent }
 
@@ -369,39 +298,20 @@ struct ImagePicker: UIViewControllerRepresentable {
     }
 }
 
-// MARK: - Color hex (تأكدي ما فيه نسخة ثانية بنفس الاسم)
+//////////////////////////////////////////////////////////////////
+// MARK: - Color Hex
+//////////////////////////////////////////////////////////////////
 
 extension Color {
     init(hex: String) {
-        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        let hex = hex.trimmingCharacters(in: .alphanumerics.inverted)
         var int: UInt64 = 0
         Scanner(string: hex).scanHexInt64(&int)
 
-        let a, r, g, b: UInt64
-        switch hex.count {
-        case 3:
-            (a, r, g, b) = (255,
-                            (int >> 8) * 17,
-                            (int >> 4 & 0xF) * 17,
-                            (int & 0xF) * 17)
-        case 6:
-            (a, r, g, b) = (255,
-                            int >> 16,
-                            int >> 8 & 0xFF,
-                            int & 0xFF)
-        case 8:
-            (a, r, g, b) = (int >> 24,
-                            int >> 16 & 0xFF,
-                            int >> 8 & 0xFF,
-                            int & 0xFF)
-        default:
-            (a, r, g, b) = (255, 0, 0, 0)
-        }
+        let r = Double((int >> 16) & 0xFF) / 255
+        let g = Double((int >> 8) & 0xFF) / 255
+        let b = Double(int & 0xFF) / 255
 
-        self.init(.sRGB,
-                  red:   Double(r) / 255,
-                  green: Double(g) / 255,
-                  blue:  Double(b) / 255,
-                  opacity: Double(a) / 255)
+        self.init(.sRGB, red: r, green: g, blue: b, opacity: 1)
     }
 }
