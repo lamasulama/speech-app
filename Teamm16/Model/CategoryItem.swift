@@ -14,3 +14,5 @@ struct CategoryItem: Identifiable, Hashable {
     let backgroundColor: Color
     let kind: CategoryKind
 }
+
+//comment for test
